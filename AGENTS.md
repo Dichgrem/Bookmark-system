@@ -19,6 +19,7 @@ This is a full-stack Java Spring Boot and Vue 3 application.
 - `just fmt` - Runs formatters across the full stack (Spotless for Java, Prettier for Vue/JS/TS, Alejandra for Nix).
 
 ## Important Notes for Agents
-- **Database Location**: The database runs locally on port `3306` with data stored in `$PWD/.local/mysql`. Do not assume a system-level MySQL service.
+- **Database Location**: The database runs locally on port `3306`. On Linux/macOS/WSL, data is stored in `$PWD/.local/mysql` managed by Nix. **On native Windows**, agents should assume the user has a globally installed MySQL/MariaDB service running on port 3306 (root/root).
+- **Windows compatibility**: Commands like `just start-db` and `nix develop` will fail on native Windows. Agents must instruct users to start their own database service and run `just start-backend` / `just start-frontend` separately.
 - **Monorepo structure**: Ensure you are in the correct directory (`backend/` for Maven commands, `frontend/` for bun/Vite commands) if not using `just`. 
 - **Backend framework**: The backend relies on `lombok` and `mybatis-plus`. Ensure any added entities use Lombok annotations and follow MyBatis Plus conventions.

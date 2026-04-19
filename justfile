@@ -7,6 +7,7 @@ build:
 
 start-db:
     mkdir -p .local/mysql
+    test -d .local/mysql/mysql || mariadb-install-db --auth-root-authentication-method=normal --datadir=$PWD/.local/mysql
     mariadbd --datadir $PWD/.local/mysql --pid-file $PWD/.local/mysql/mysql.pid --socket $PWD/.local/mysql/mysql.sock --port 3306 &
 
 start-backend:
