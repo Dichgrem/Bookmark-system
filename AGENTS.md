@@ -4,7 +4,7 @@ This is a full-stack Java Spring Boot and Vue 3 application.
 
 ## System Architecture
 - **Backend (`/backend`)**: Java 17, Spring Boot, Maven, MyBatis Plus, JWT. 
-- **Frontend (`/frontend`)**: Vue 3, Vite, Element Plus, Axios. Uses `npm` for package management.
+- **Frontend (`/frontend`)**: Vue 3, Vite, Element Plus, Axios. Uses `bun` for package management.
 - **Database**: MariaDB (MySQL compatible).
 
 ## Development Environment & Task Runner
@@ -15,9 +15,9 @@ This is a full-stack Java Spring Boot and Vue 3 application.
 - `just start-all` - Starts the database, backend, and frontend concurrently.
 - `just stop` - Gracefully shuts down the DB, Spring Boot, and Vite processes.
 - `just start-db` - Initializes and starts a local MariaDB instance inside `.local/mysql`.
-- `just build` - Compiles the backend (`mvn clean compile -DskipTests`) and installs frontend dependencies (`npm install`).
+- `just build` - Compiles the backend (`mvn clean compile -DskipTests`) and installs frontend dependencies (`bun install`).
 
 ## Important Notes for Agents
 - **Database Location**: The database runs locally on port `3306` with data stored in `$PWD/.local/mysql`. Do not assume a system-level MySQL service.
-- **Monorepo structure**: Ensure you are in the correct directory (`backend/` for Maven commands, `frontend/` for npm/Vite commands) if not using `just`. 
+- **Monorepo structure**: Ensure you are in the correct directory (`backend/` for Maven commands, `frontend/` for bun/Vite commands) if not using `just`. 
 - **Backend framework**: The backend relies on `lombok` and `mybatis-plus`. Ensure any added entities use Lombok annotations and follow MyBatis Plus conventions.

@@ -19,6 +19,8 @@
       in {
         default = pkgs.mkShell {
           buildInputs = with pkgs; [
+            bun
+            just
             openjdk17
             mariadb
             fontconfig

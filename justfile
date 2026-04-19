@@ -3,7 +3,7 @@ default:
 
 build:
     cd backend && mvn clean compile -DskipTests
-    cd frontend && npm install
+    cd frontend && bun install
 
 start-db:
     mkdir -p .local/mysql
@@ -13,7 +13,7 @@ start-backend:
     cd backend && mvn spring-boot:run &
 
 start-frontend:
-    cd frontend && (test -d node_modules || npm install) && npm run dev &
+    cd frontend && (test -d node_modules || bun install) && bun run dev &
 
 start-all:
     just start-db

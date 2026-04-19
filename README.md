@@ -25,7 +25,7 @@ just start-all
 just stop
 
 # 其他常用命令：
-just build         # 编译后端并安装前端 npm 依赖
+just build         # 编译后端并安装前端 bun 依赖
 just start-db      # 仅启动本地数据库 (数据文件储存在当前目录的 .local/mysql 中)
 just start-backend # 仅启动后端
 just start-frontend# 仅启动前端
