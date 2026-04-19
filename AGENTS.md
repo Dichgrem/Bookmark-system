@@ -16,6 +16,7 @@ This is a full-stack Java Spring Boot and Vue 3 application.
 - `just stop` - Gracefully shuts down the DB, Spring Boot, and Vite processes.
 - `just start-db` - Initializes and starts a local MariaDB instance inside `.local/mysql`.
 - `just build` - Compiles the backend (`mvn clean compile -DskipTests`) and installs frontend dependencies (`bun install`).
+- `just fmt` - Runs formatters across the full stack (Spotless for Java, Prettier for Vue/JS/TS, Alejandra for Nix).
 
 ## Important Notes for Agents
 - **Database Location**: The database runs locally on port `3306` with data stored in `$PWD/.local/mysql`. Do not assume a system-level MySQL service.

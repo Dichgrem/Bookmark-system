@@ -10,6 +10,7 @@ import lombok.Data;
 public class Category {
     @TableId(type = IdType.AUTO)
     private Long id;
+
     private String name;
     private Long userId;
 }

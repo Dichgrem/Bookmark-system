@@ -10,6 +10,7 @@ import lombok.Data;
 public class Bookmark {
     @TableId(type = IdType.AUTO)
     private Long id;
+
     private String title;
     private String url;
     private Long categoryId;

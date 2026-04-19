@@ -14,15 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     // 变量名小写（修复注入问题）
-    @Autowired
-    private UserService userService;
+    @Autowired private UserService userService;
 
     @PostMapping("/login")
     public Result login(@RequestBody User user) {
-        User one = userService.lambdaQuery()
-                .eq(User::getUsername, user.getUsername())
-                .eq(User::getPassword, user.getPassword())
-                .one();
+        User one =
+                userService
+                        .lambdaQuery()
+                        .eq(User::getUsername, user.getUsername())
+                        .eq(User::getPassword, user.getPassword())
+                        .one();
 
         if (one == null) {
             return Result.error("账号或密码错误");

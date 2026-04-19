@@ -3,23 +3,19 @@ package com.example.bookmarkbackend.controller;
 import com.example.bookmarkbackend.entity.Category;
 import com.example.bookmarkbackend.service.CategoryService;
 import com.example.bookmarkbackend.util.Result;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 import java.util.List;
+import javax.annotation.Resource;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
 
-    @Resource
-    private CategoryService categoryService;
+    @Resource private CategoryService categoryService;
 
     @GetMapping("/list")
     public Result<List<Category>> list(Long userId) {
-        List<Category> list = categoryService.lambdaQuery()
-                .eq(Category::getUserId, userId)
-                .list();
+        List<Category> list = categoryService.lambdaQuery().eq(Category::getUserId, userId).list();
         return Result.success(list);
     }
 

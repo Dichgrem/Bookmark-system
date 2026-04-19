@@ -7,5 +7,5 @@ import com.example.bookmarkbackend.service.BookmarkService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BookmarkServiceImpl extends ServiceImpl<BookmarkMapper, Bookmark> implements BookmarkService {
-}
+public class BookmarkServiceImpl extends ServiceImpl<BookmarkMapper, Bookmark>
+        implements BookmarkService {}

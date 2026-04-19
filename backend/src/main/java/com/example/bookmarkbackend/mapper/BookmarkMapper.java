@@ -5,5 +5,4 @@ import com.example.bookmarkbackend.entity.Bookmark;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface BookmarkMapper extends BaseMapper<Bookmark> {
-}
+public interface BookmarkMapper extends BaseMapper<Bookmark> {}
