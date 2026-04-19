@@ -1,0 +1,26 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.java text
+*.xml text
+*.yml text
+*.yaml text
+*.properties text
+*.md text
+*.vue text
+*.js text
+*.ts text
+*.json text
+*.css text
+*.html text
+
+# Shell scripts must have LF (Unix) line endings
+mvnw text eol=lf
+*.sh text eol=lf
+
+# Windows batch scripts must have CRLF (Windows) line endings
+mvnw.cmd text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
