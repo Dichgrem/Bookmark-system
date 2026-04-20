@@ -24,6 +24,8 @@
             fontconfig
             dejavu_fonts
             bun
+            maven
+            just
             alejandra
           ];
         };
