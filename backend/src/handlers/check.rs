@@ -167,7 +167,7 @@ async fn check_all_links(state: AppState, user_id: i64) -> Vec<CheckResult> {
 
     let client = match Client::builder()
         .timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS))
-        .user_agent("subnav/0.2.0")
+        .user_agent(format!("subnav/{}", env!("CARGO_PKG_VERSION")))
         .redirect(reqwest::redirect::Policy::limited(5))
         .tcp_keepalive(Duration::from_secs(30))
         .pool_max_idle_per_host(4)

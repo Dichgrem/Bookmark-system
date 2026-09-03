@@ -2,6 +2,25 @@
 
 All notable changes to subnav.
 
+## [0.3.0] - 2026-09-03
+
+### Security
+- SSRF protection: reject private/loopback/link-local addresses in link checker
+- Login rate limiting (5 failures → 15 min lockout)
+- Replace public register with env-based admin bootstrap (`ADMIN_USERNAME`/`ADMIN_PASSWORD`)
+
+### Fixed
+- Infinite polling when checking links with no bookmarks
+- Link checker concurrency (unified tokio mutex, task error handling, ordered results)
+- 401 handling: clear session and redirect to login
+- Favicon fallback to DuckDuckGo when Google is unavailable
+- Error handling for save operations and user parsing
+- Export via axios to go through interceptors
+
+### Changed
+- JWT default expiry extended to 30 days
+- GitHub Actions upgraded to Node 24 versions
+
 ## [0.2.0] - 2026-07-21
 
 ### Added
