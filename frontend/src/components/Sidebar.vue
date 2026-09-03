@@ -353,17 +353,16 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { LS_EXPANDED } from "../utils/constants.js";
 
 const { t } = useI18n();
-
-const STORAGE_KEY = "bookmark-expanded-keys";
 
 const expandedKeys = ref([]);
 let initialized = false;
 
 onMounted(() => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(LS_EXPANDED);
     if (saved) {
       expandedKeys.value = JSON.parse(saved);
       initialized = true;
@@ -387,7 +386,7 @@ watch(
     if (!initialized && tree && tree.length > 0) {
       expandedKeys.value = tree.map((n) => n.id);
       initialized = true;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(expandedKeys.value));
+      localStorage.setItem(LS_EXPANDED, JSON.stringify(expandedKeys.value));
     }
   },
   { immediate: true },
