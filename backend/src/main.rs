@@ -4,6 +4,7 @@ mod db;
 mod error;
 mod handlers;
 mod models;
+mod rate_limit;
 mod result;
 
 use std::collections::HashMap;
@@ -21,6 +22,7 @@ use tower_http::trace::TraceLayer;
 use crate::config::Config;
 use crate::db::DbPool;
 use crate::handlers::check::{CheckProgress, CheckResult};
+use crate::rate_limit::LoginLimiter;
 
 type CheckCache = Arc<std::sync::Mutex<HashMap<i64, (i64, Vec<CheckResult>)>>>;
 
@@ -31,6 +33,7 @@ pub struct AppState {
     pub jwt_secret: String,
     pub check_state: Arc<Mutex<HashMap<i64, CheckProgress>>>,
     pub check_cache: CheckCache,
+    pub login_limiter: LoginLimiter,
 }
 
 #[tokio::main]
@@ -50,6 +53,7 @@ async fn main() {
         jwt_secret,
         check_state: Arc::new(Mutex::new(HashMap::new())),
         check_cache: Arc::new(std::sync::Mutex::new(HashMap::new())),
+        login_limiter: LoginLimiter::default(),
     };
 
     let auth_routes = Router::new()

@@ -31,6 +31,9 @@ pub async fn login(
     if username.len() > 50 {
         return Ok(ApiResult::error("用户名过长"));
     }
+    if state.login_limiter.is_locked(username) {
+        return Ok(ApiResult::error("尝试次数过多，请稍后再试"));
+    }
     let conn = state.db.get()?;
     let mut stmt =
         conn.prepare("SELECT id, username, password, role FROM user WHERE username = ?1")?;
@@ -45,6 +48,7 @@ pub async fn login(
     match result {
         Ok(user) => {
             if bcrypt::verify(&req.password, &user.password).unwrap_or(false) {
+                state.login_limiter.clear(username);
                 let token = crate::auth::sign_token(
                     user.id.unwrap(),
                     &user.role,
@@ -59,10 +63,14 @@ pub async fn login(
                     token,
                 }))
             } else {
+                state.login_limiter.record_failure(username);
                 Ok(ApiResult::error("账号或密码错误"))
             }
         }
-        Err(_) => Ok(ApiResult::error("账号或密码错误")),
+        Err(_) => {
+            state.login_limiter.record_failure(username);
+            Ok(ApiResult::error("账号或密码错误"))
+        }
     }
 }
 
