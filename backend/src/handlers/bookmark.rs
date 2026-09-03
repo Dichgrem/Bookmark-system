@@ -107,7 +107,7 @@ pub async fn add(
         let id = conn.last_insert_rowid();
         if bookmark.sort_order == 0 {
             conn.execute(
-                "UPDATE bookmark SET sort_order = ?1 WHERE id = ?1",
+                "UPDATE bookmark SET sort_order = id WHERE id = ?1",
                 rusqlite::params![id],
             )?;
             bookmark.sort_order = id as i32;

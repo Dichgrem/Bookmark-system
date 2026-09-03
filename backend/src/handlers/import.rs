@@ -40,7 +40,7 @@ pub fn insert_bookmark_if_new(
         )?;
         let id = conn.last_insert_rowid();
         conn.execute(
-            "UPDATE bookmark SET sort_order = ?1 WHERE id = ?1 AND sort_order = 0",
+            "UPDATE bookmark SET sort_order = id WHERE id = ?1 AND sort_order = 0",
             rusqlite::params![id],
         )?;
         Ok(Some(1))
