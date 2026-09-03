@@ -45,7 +45,7 @@
             v-if="book.icon"
             :src="book.icon"
             class="book-icon"
-            @error="(e) => (e.target.style.display = 'none')"
+            @error="onIconError($event, book)"
           />
           <a :href="book.url" target="_blank" class="book-title">{{
             book.title
@@ -74,6 +74,21 @@ const props = defineProps({ groups: Array, skipFirstTitle: Boolean });
 const emit = defineEmits(["dragStart", "dragEnd", "edit", "reorder"]);
 
 const dragOverId = ref(null);
+
+const onIconError = (e, book) => {
+  const img = e.target;
+  if (img.dataset.fallbackApplied) {
+    img.style.display = "none";
+    return;
+  }
+  img.dataset.fallbackApplied = "1";
+  try {
+    const domain = new URL(book.url).hostname;
+    img.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+  } catch {
+    img.style.display = "none";
+  }
+};
 
 const onDragStart = (event, book) => {
   event.dataTransfer.setData("text/plain", String(book.id));
