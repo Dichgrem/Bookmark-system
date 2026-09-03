@@ -1,4 +1,5 @@
 use std::env;
+use std::path::Path;
 
 #[derive(Clone)]
 pub struct Config {
@@ -26,7 +27,13 @@ impl Config {
                 .and_then(|s| s.parse().ok())
                 .unwrap_or(8989),
             cors_origin: env::var("CORS_ORIGIN").unwrap_or_else(|_| "http://localhost:5173".into()),
-            frontend_dir: env::var("FRONTEND_DIR").unwrap_or_else(|_| "../frontend/dist".into()),
+            frontend_dir: env::var("FRONTEND_DIR").unwrap_or_else(|_| {
+                Path::new(env!("CARGO_MANIFEST_DIR"))
+                    .parent()
+                    .map(|p| p.join("frontend/dist"))
+                    .map(|p| p.to_string_lossy().into_owned())
+                    .unwrap_or_else(|| "../frontend/dist".into())
+            }),
             allow_private_urls: env::var("ALLOW_PRIVATE_URLS")
                 .ok()
                 .map(|s| s == "true" || s == "1")
