@@ -18,7 +18,7 @@ impl Config {
             jwt_expire_hours: env::var("JWT_EXPIRE_HOURS")
                 .ok()
                 .and_then(|s| s.parse().ok())
-                .unwrap_or(72),
+                .unwrap_or(720),
             database_path: env::var("DATABASE_PATH")
                 .unwrap_or_else(|_| ".local/bookmark.db".into()),
             port: env::var("PORT")
