@@ -60,7 +60,7 @@ pub async fn check_links(
         .unwrap()
         .as_secs() as i64;
 
-    let cached = state.check_cache.lock().unwrap().get(&user_id).cloned();
+    let cached = state.check_cache.lock().await.get(&user_id).cloned();
 
     if let Some((cached_at, cached_results)) = cached {
         if now - cached_at < CACHE_TTL_SECS {
@@ -100,7 +100,7 @@ pub async fn check_links(
         state_clone
             .check_cache
             .lock()
-            .unwrap()
+            .await
             .insert(user_id, (now, results));
     });
 
@@ -199,13 +199,16 @@ async fn check_all_links(state: AppState, user_id: i64) -> Vec<CheckResult> {
     }
 
     for h in handles {
-        let _ = h.await;
+        if let Err(e) = h.await {
+            tracing::error!("check task failed: {e:?}");
+        }
     }
 
     let mut state_map = state.check_state.lock().await;
     match state_map.get_mut(&user_id) {
         Some(progress) => {
             progress.finished = true;
+            progress.results.sort_by_key(|r| r.id);
             progress.results.clone()
         }
         None => vec![],

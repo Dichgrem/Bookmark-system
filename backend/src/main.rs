@@ -24,7 +24,7 @@ use crate::db::DbPool;
 use crate::handlers::check::{CheckProgress, CheckResult};
 use crate::rate_limit::LoginLimiter;
 
-type CheckCache = Arc<std::sync::Mutex<HashMap<i64, (i64, Vec<CheckResult>)>>>;
+type CheckCache = Arc<Mutex<HashMap<i64, (i64, Vec<CheckResult>)>>>;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -53,7 +53,7 @@ async fn main() {
         config: config.clone(),
         jwt_secret,
         check_state: Arc::new(Mutex::new(HashMap::new())),
-        check_cache: Arc::new(std::sync::Mutex::new(HashMap::new())),
+        check_cache: Arc::new(Mutex::new(HashMap::new())),
         login_limiter: LoginLimiter::default(),
     };
 
