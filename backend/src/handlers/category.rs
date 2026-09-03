@@ -213,7 +213,7 @@ mod tests {
     fn collect_single_category() {
         let conn = setup_db();
         let mut ids = Vec::new();
-        collect_category_ids(&conn, 1, &mut ids);
+        collect_category_ids(&conn, 1, &mut ids).unwrap();
         assert_eq!(ids, vec![1]);
     }
 
@@ -237,7 +237,7 @@ mod tests {
         .unwrap();
 
         let mut ids = Vec::new();
-        collect_category_ids(&conn, 1, &mut ids);
+        collect_category_ids(&conn, 1, &mut ids).unwrap();
         assert_eq!(ids.len(), 3);
         assert!(ids.contains(&1));
         assert!(ids.contains(&2));
