@@ -343,7 +343,12 @@ const {
 } = useBookmarks();
 
 const darkMode = ref(localStorage.getItem(LS_DARK) === "true");
-const currentUser = JSON.parse(localStorage.getItem(LS_USER) || "{}");
+let currentUser = {};
+try {
+  currentUser = JSON.parse(localStorage.getItem(LS_USER) || "{}");
+} catch {
+  currentUser = {};
+}
 const isAdmin = computed(() => currentUser.role === "admin");
 
 const selectedCategoryId = ref(null);

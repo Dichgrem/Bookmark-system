@@ -38,9 +38,13 @@ export function useBookmarks() {
   };
 
   const saveEditBook = async (form) => {
-    await request.post("/bookmark/add", { ...form });
-    showEditBook.value = false;
-    loadData();
+    try {
+      await request.post("/bookmark/add", { ...form });
+      showEditBook.value = false;
+      loadData();
+    } catch {
+      ElMessage.error(t("bookmark.saveFailed"));
+    }
   };
 
   const addCate = (parentId) => {
@@ -54,9 +58,13 @@ export function useBookmarks() {
   };
 
   const saveEditCate = async () => {
-    await request.post("/category/add", editCate.value);
-    showEditCate.value = false;
-    loadData();
+    try {
+      await request.post("/category/add", editCate.value);
+      showEditCate.value = false;
+      loadData();
+    } catch {
+      ElMessage.error(t("bookmark.saveFailed"));
+    }
   };
 
   const openAddSubCate = (parentId) => {
@@ -70,13 +78,17 @@ export function useBookmarks() {
       ElMessage.warning(t("category.nameRequired"));
       return;
     }
-    await request.post("/category/add", {
-      name: newSubCateName.value,
-      parentId: addSubParentId.value,
-      sortOrder: 0,
-    });
-    showAddSubCate.value = false;
-    loadData();
+    try {
+      await request.post("/category/add", {
+        name: newSubCateName.value,
+        parentId: addSubParentId.value,
+        sortOrder: 0,
+      });
+      showAddSubCate.value = false;
+      loadData();
+    } catch {
+      ElMessage.error(t("bookmark.saveFailed"));
+    }
   };
 
   const fetchIcons = async () => {

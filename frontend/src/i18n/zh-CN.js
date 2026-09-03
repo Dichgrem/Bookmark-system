@@ -33,6 +33,7 @@ export default {
   bookmark: {
     edit: "编辑",
     save: "保存",
+    saveFailed: "保存失败",
     cancel: "取消",
     title: "标题",
     url: "网址",

@@ -33,6 +33,7 @@ export default {
   bookmark: {
     edit: "Edit",
     save: "Save",
+    saveFailed: "Failed to save",
     cancel: "Cancel",
     title: "Title",
     url: "URL",
