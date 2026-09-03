@@ -46,6 +46,7 @@ export default {
     importSuccess: "Import successful, ate {count} bookmarks",
     importFailed: "Import failed",
     importNetworkError: "Network error, import failed",
+    loadFailed: "Failed to load data, please try again",
     exportFailed: "Export failed",
     importing: "Devouring data...",
     exporting: "Spewing data...",

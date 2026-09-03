@@ -46,6 +46,7 @@ export default {
     importSuccess: "导入成功，共吃进 {count} 个书签",
     importFailed: "导入失败",
     importNetworkError: "网络异常，导入失败",
+    loadFailed: "加载数据失败，请重试",
     exportFailed: "导出失败",
     importing: "疯狂吞食数据中...",
     exporting: "疯狂喷射数据中...",

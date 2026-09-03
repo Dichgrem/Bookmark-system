@@ -28,7 +28,7 @@ export function useBookmarks() {
       cateList.value = c.data.data || [];
       bookList.value = b.data.data || [];
     } catch {
-      ElMessage.error(t("bookmark.importNetworkError"));
+      ElMessage.error(t("bookmark.loadFailed"));
     }
   };
 

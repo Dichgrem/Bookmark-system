@@ -17,7 +17,7 @@ export function useUserAdmin() {
       const res = await request.get("/user/list");
       if (res.data.code === 200) userList.value = res.data.data;
     } catch {
-      ElMessage.error(t("bookmark.importNetworkError"));
+      ElMessage.error(t("bookmark.loadFailed"));
     }
   };
 

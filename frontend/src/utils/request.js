@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LS_TOKEN } from "./constants.js";
+import { LS_TOKEN, LS_USER } from "./constants.js";
 
 const service = axios.create({
   baseURL: import.meta.env.DEV ? "http://localhost:8989" : "",
@@ -13,5 +13,19 @@ service.interceptors.request.use((config) => {
   }
   return config;
 });
+
+service.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem(LS_TOKEN);
+      localStorage.removeItem(LS_USER);
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  },
+);
 
 export default service;
