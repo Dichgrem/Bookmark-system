@@ -20,6 +20,7 @@ pub struct CheckProgress {
     pub total: usize,
     pub completed: usize,
     pub results: Vec<CheckResult>,
+    pub finished: bool,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -69,6 +70,7 @@ pub async fn check_links(
                     total: cached_results.len(),
                     completed: cached_results.len(),
                     results: cached_results.clone(),
+                    finished: true,
                 },
             );
             return Ok(ApiResult::success("cached".to_string()));
@@ -86,6 +88,7 @@ pub async fn check_links(
                 total: 0,
                 completed: 0,
                 results: vec![],
+                finished: false,
             },
         );
     }
@@ -110,7 +113,7 @@ pub async fn check_status(
     let mut state_map = state.check_state.lock().await;
     match state_map.get(&auth.0) {
         Some(progress) => {
-            let finished = progress.total > 0 && progress.completed >= progress.total;
+            let finished = progress.finished;
             let response = CheckStatusResponse {
                 total: progress.total,
                 completed: progress.completed,
@@ -143,7 +146,10 @@ async fn check_all_links(state: AppState, user_id: i64) -> Vec<CheckResult> {
 
     let bookmarks = load_bookmarks(&state, user_id);
     if bookmarks.is_empty() {
-        state.check_state.lock().await.remove(&user_id);
+        let mut state_map = state.check_state.lock().await;
+        if let Some(progress) = state_map.get_mut(&user_id) {
+            progress.finished = true;
+        }
         return vec![];
     }
 
@@ -192,11 +198,14 @@ async fn check_all_links(state: AppState, user_id: i64) -> Vec<CheckResult> {
         let _ = h.await;
     }
 
-    let state_map = state.check_state.lock().await;
-    state_map
-        .get(&user_id)
-        .map(|p| p.results.clone())
-        .unwrap_or_default()
+    let mut state_map = state.check_state.lock().await;
+    match state_map.get_mut(&user_id) {
+        Some(progress) => {
+            progress.finished = true;
+            progress.results.clone()
+        }
+        None => vec![],
+    }
 }
 
 fn load_bookmarks(state: &AppState, user_id: i64) -> Vec<(i64, String, String, Option<String>)> {
