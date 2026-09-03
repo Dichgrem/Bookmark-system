@@ -17,12 +17,6 @@ pub fn init_db(db_path: &str) -> (DbPool, String) {
     conn.execute_batch("PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;")
         .expect("Failed to set pragmas");
 
-    conn.execute(
-        "ALTER TABLE user ADD COLUMN role TEXT NOT NULL DEFAULT 'user'",
-        [],
-    )
-    .ok();
-
     let migrations = Migrations::new(vec![
         M::up(
             "CREATE TABLE IF NOT EXISTS secrets (
