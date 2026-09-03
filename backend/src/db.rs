@@ -75,7 +75,7 @@ pub fn init_db(db_path: &str) -> (DbPool, String) {
                 "INSERT INTO secrets (key, value) VALUES ('jwt_secret', ?1)",
                 rusqlite::params![hex],
             )
-            .ok();
+            .expect("Failed to persist jwt_secret");
             hex
         })
     });

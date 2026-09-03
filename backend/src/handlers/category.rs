@@ -33,8 +33,7 @@ pub async fn list(
                 sort_order: row.get(4)?,
             })
         })?
-        .filter_map(|r| r.ok())
-        .collect();
+        .collect::<Result<Vec<_>, _>>()?;
     Ok(ApiResult::success(categories))
 }
 
@@ -124,8 +123,7 @@ pub async fn batch_update(
         let mut stmt = tx.prepare(&sql)?;
         let pairs: Vec<(i64, i64)> = stmt
             .query_map(params_from_iter(ids), |row| Ok((row.get(0)?, row.get(1)?)))?
-            .filter_map(|r| r.ok())
-            .collect();
+            .collect::<Result<Vec<_>, _>>()?;
         pairs.into_iter().collect()
     };
 
@@ -182,8 +180,7 @@ fn collect_category_ids(
     let mut stmt = conn.prepare("SELECT id FROM category WHERE parent_id = ?1")?;
     let children: Vec<i64> = stmt
         .query_map(rusqlite::params![parent_id], |row| row.get(0))?
-        .filter_map(|r| r.ok())
-        .collect();
+        .collect::<Result<Vec<_>, _>>()?;
     for child_id in children {
         collect_category_ids(conn, child_id, ids)?;
     }

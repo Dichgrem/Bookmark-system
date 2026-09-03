@@ -252,7 +252,6 @@ pub async fn list_users(
                 role: row.get(2)?,
             })
         })?
-        .filter_map(|r| r.ok())
-        .collect();
+        .collect::<Result<Vec<_>, _>>()?;
     Ok(ApiResult::success(users))
 }

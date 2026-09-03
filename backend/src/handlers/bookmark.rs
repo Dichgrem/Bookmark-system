@@ -48,8 +48,7 @@ pub async fn list(
                 sort_order: row.get(6)?,
             })
         })?
-        .filter_map(|r| r.ok())
-        .collect();
+        .collect::<Result<Vec<_>, _>>()?;
     Ok(ApiResult::success(bookmarks))
 }
 
@@ -153,8 +152,7 @@ pub async fn batch_update_sort(
         let mut stmt = tx.prepare(&sql)?;
         let pairs: Vec<(i64, i64)> = stmt
             .query_map(params_from_iter(ids), |row| Ok((row.get(0)?, row.get(1)?)))?
-            .filter_map(|r| r.ok())
-            .collect();
+            .collect::<Result<Vec<_>, _>>()?;
         pairs.into_iter().collect()
     };
 
@@ -209,8 +207,7 @@ fn fetch_missing_icons(conn: &rusqlite::Connection, user_id: i64) -> Result<i64,
         .query_map(rusqlite::params![user_id], |row| {
             Ok((row.get(0)?, row.get(1)?))
         })?
-        .filter_map(|r| r.ok())
-        .collect();
+        .collect::<Result<Vec<_>, _>>()?;
 
     if rows.is_empty() {
         return Ok(0);
@@ -302,8 +299,7 @@ fn list_categories(
                 sort_order: row.get(4)?,
             })
         })?
-        .filter_map(|r| r.ok())
-        .collect();
+        .collect::<Result<Vec<_>, _>>()?;
     Ok(items)
 }
 
@@ -325,8 +321,7 @@ fn list_bookmarks_raw(
                 sort_order: row.get(6)?,
             })
         })?
-        .filter_map(|r| r.ok())
-        .collect();
+        .collect::<Result<Vec<_>, _>>()?;
     Ok(items)
 }
 
