@@ -1,0 +1,17 @@
+.git
+.gitignore
+target
+node_modules
+dist
+.local
+result
+result-*
+.direnv
+*.log
+todo.md
+smell-report-*.md
+AGENTS.md
+reference
+.codegraph
+.vscode
+.idea

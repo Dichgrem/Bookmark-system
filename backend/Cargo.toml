@@ -1,0 +1,23 @@
+[package]
+name = "bookmark-backend"
+version = "0.2.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7", features = ["multipart"] }
+tokio = { version = "1", features = ["full"] }
+rusqlite = { version = "0.31", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+url = "2"
+tower-http = { version = "0.5", features = ["cors", "fs", "trace", "timeout"] }
+bcrypt = "0.16"
+jsonwebtoken = "9"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+rand = "0.8"
+hex = "0.4"
+rusqlite_migration = "1"
+r2d2 = "0.8.10"
+r2d2_sqlite = "0.24"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }

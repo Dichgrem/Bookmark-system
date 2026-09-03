@@ -1,0 +1,10 @@
+services:
+  bookmark:
+    image: brantcoat/subnav:latest
+    ports:
+      - "8989:8989"
+    environment:
+      - DATABASE_PATH=/app/.local/bookmark.db
+    volumes:
+      - ./data:/app/.local
+    restart: unless-stopped
