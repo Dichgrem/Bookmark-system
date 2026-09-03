@@ -74,53 +74,6 @@ pub async fn login(
     }
 }
 
-pub async fn register(
-    State(state): State<AppState>,
-    Json(user): Json<User>,
-) -> Result<ApiResult<()>, AppError> {
-    let username = user.username.trim();
-    if username.is_empty() || user.password.is_empty() {
-        return Ok(ApiResult::error("账号或密码不能为空"));
-    }
-    if username.len() > 50 {
-        return Ok(ApiResult::error("用户名过长"));
-    }
-    if user.password.len() > 128 {
-        return Ok(ApiResult::error("密码过长"));
-    }
-    if user.password.len() < 4 {
-        return Ok(ApiResult::error("密码不能少于 4 位"));
-    }
-    let hashed = bcrypt::hash(&user.password, 10).map_err(|e| {
-        tracing::error!("bcrypt hash failed: {e:?}");
-        AppError::internal("服务器错误")
-    })?;
-    let conn = state.db.get()?;
-    let exists: bool = conn
-        .query_row(
-            "SELECT COUNT(*) FROM user WHERE username = ?1",
-            rusqlite::params![username],
-            |row| row.get::<_, i64>(0),
-        )
-        .map(|c| c > 0)
-        .unwrap_or(false);
-    if exists {
-        return Ok(ApiResult::error("用户名已存在"));
-    }
-    let total: i64 = conn
-        .query_row("SELECT COUNT(*) FROM user", [], |row| row.get(0))
-        .unwrap_or(0);
-    if total > 0 {
-        return Ok(ApiResult::error("注册已关闭，请联系管理员添加账号"));
-    }
-    let role = if total == 0 { "admin" } else { "user" };
-    conn.execute(
-        "INSERT INTO user (username, password, role) VALUES (?1, ?2, ?3)",
-        rusqlite::params![username, hashed, role],
-    )?;
-    Ok(ApiResult::success_empty())
-}
-
 #[derive(serde::Deserialize)]
 pub struct CreateUserRequest {
     pub username: String,

@@ -8,6 +8,8 @@ pub struct Config {
     pub cors_origin: String,
     pub frontend_dir: String,
     pub allow_private_urls: bool,
+    pub admin_username: String,
+    pub admin_password: String,
 }
 
 impl Config {
@@ -29,6 +31,8 @@ impl Config {
                 .ok()
                 .map(|s| s == "true" || s == "1")
                 .unwrap_or_else(|| cfg!(debug_assertions)),
+            admin_username: env::var("ADMIN_USERNAME").unwrap_or_else(|_| "admin".into()),
+            admin_password: env::var("ADMIN_PASSWORD").unwrap_or_else(|_| "password".into()),
         }
     }
 }

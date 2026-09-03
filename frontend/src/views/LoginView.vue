@@ -1,9 +1,5 @@
 <template>
-  <Login
-    :loading="submitting"
-    @login="handleLogin"
-    @register="handleRegister"
-  />
+  <Login :loading="submitting" @login="handleLogin" />
 </template>
 
 <script setup>
@@ -40,22 +36,6 @@ const handleLogin = async (payload) => {
     }
   } catch {
     ElMessage.error(t("login.loginFailed"));
-  } finally {
-    submitting.value = false;
-  }
-};
-
-const handleRegister = async (payload) => {
-  submitting.value = true;
-  try {
-    const res = await request.post("/user/register", payload);
-    if (res.data.code === 200) {
-      ElMessage.success(t("login.registerSuccess"));
-    } else {
-      ElMessage.error(res.data.msg || t("login.registerFailed"));
-    }
-  } catch {
-    ElMessage.error(t("login.registerFailed"));
   } finally {
     submitting.value = false;
   }

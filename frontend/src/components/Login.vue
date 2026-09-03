@@ -82,14 +82,6 @@
             >
               {{ loading ? $t("login.loggingIn") : $t("login.login") }}
             </button>
-            <button
-              type="button"
-              class="login-btn outline-btn"
-              :disabled="loading"
-              @click="handleRegister"
-            >
-              {{ loading ? $t("login.registering") : $t("login.register") }}
-            </button>
           </div>
         </form>
       </main>
@@ -105,7 +97,7 @@ import { LS_DARK } from "../utils/constants.js";
 
 const { t } = useI18n();
 defineProps({ loading: Boolean });
-const emit = defineEmits(["login", "register"]);
+const emit = defineEmits(["login"]);
 
 const isDark = localStorage.getItem(LS_DARK) === "true";
 const form = ref({ username: "", password: "" });
@@ -116,14 +108,6 @@ const handleLogin = () => {
     return;
   }
   emit("login", form.value);
-};
-
-const handleRegister = () => {
-  if (!form.value.username || !form.value.password) {
-    ElMessage.warning(t("login.usernameRequired"));
-    return;
-  }
-  emit("register", form.value);
 };
 
 const mountainsRef = ref(null);

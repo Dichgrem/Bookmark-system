@@ -90,3 +90,19 @@ pub fn init_db(db_path: &str) -> (DbPool, String) {
 
     (pool, secret)
 }
+
+pub fn ensure_admin_user(pool: &DbPool, username: &str, password: &str) {
+    let conn = pool.get().expect("Failed to get database connection");
+    let total: i64 = conn
+        .query_row("SELECT COUNT(*) FROM user", [], |row| row.get(0))
+        .expect("Failed to query user count");
+    if total > 0 {
+        return;
+    }
+    let hashed = bcrypt::hash(password, 10).expect("Failed to hash admin password");
+    conn.execute(
+        "INSERT INTO user (username, password, role) VALUES (?1, ?2, 'admin')",
+        rusqlite::params![username, hashed],
+    )
+    .expect("Failed to create admin user");
+}

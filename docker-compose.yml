@@ -5,6 +5,9 @@ services:
       - "8989:8989"
     environment:
       - DATABASE_PATH=/app/.local/bookmark.db
+      # 可选：自定义管理员账号密码（不设置则默认 admin / password）
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=password
     volumes:
       - ./data:/app/.local
     restart: unless-stopped

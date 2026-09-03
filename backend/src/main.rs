@@ -46,6 +46,7 @@ async fn main() {
 
     let config = config::Config::from_env();
     let (pool, jwt_secret) = db::init_db(&config.database_path);
+    db::ensure_admin_user(&pool, &config.admin_username, &config.admin_password);
 
     let state = AppState {
         db: pool,
@@ -58,7 +59,6 @@ async fn main() {
 
     let auth_routes = Router::new()
         .route("/user/login", post(handlers::user::login))
-        .route("/user/register", post(handlers::user::register))
         .route(
             "/user/changePassword",
             post(handlers::user::change_password),
