@@ -2,7 +2,6 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import request from "../utils/request.js";
-import { LS_TOKEN } from "../utils/constants.js";
 
 export function useImportExport(loadData) {
   const { t } = useI18n();
@@ -15,12 +14,10 @@ export function useImportExport(loadData) {
     isExportingAnim.value = true;
     setTimeout(async () => {
       try {
-        const res = await fetch(`${request.defaults.baseURL}/bookmark/export`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem(LS_TOKEN)}`,
-          },
+        const res = await request.get("/bookmark/export", {
+          responseType: "blob",
         });
-        const blob = await res.blob();
+        const blob = res.data;
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
