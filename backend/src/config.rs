@@ -7,6 +7,7 @@ pub struct Config {
     pub port: u16,
     pub cors_origin: String,
     pub frontend_dir: String,
+    pub allow_private_urls: bool,
 }
 
 impl Config {
@@ -24,6 +25,10 @@ impl Config {
                 .unwrap_or(8989),
             cors_origin: env::var("CORS_ORIGIN").unwrap_or_else(|_| "http://localhost:5173".into()),
             frontend_dir: env::var("FRONTEND_DIR").unwrap_or_else(|_| "../frontend/dist".into()),
+            allow_private_urls: env::var("ALLOW_PRIVATE_URLS")
+                .ok()
+                .map(|s| s == "true" || s == "1")
+                .unwrap_or_else(|| cfg!(debug_assertions)),
         }
     }
 }

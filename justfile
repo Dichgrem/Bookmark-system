@@ -12,7 +12,7 @@ build:
     cd frontend && pnpm install
 
 start-backend:
-    CORS_ORIGIN=http://localhost:5173 cd backend && cargo run &
+    cd backend && CORS_ORIGIN=http://localhost:5173 ALLOW_PRIVATE_URLS=true cargo run &
 
 start-frontend:
     cd frontend && pnpm install && pnpm dev &

@@ -1,3 +1,4 @@
+use std::net::IpAddr;
 use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
@@ -139,6 +140,8 @@ pub async fn check_status(
 }
 
 async fn check_all_links(state: AppState, user_id: i64) -> Vec<CheckResult> {
+    let allow_private = state.config.allow_private_urls;
+
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -184,7 +187,8 @@ async fn check_all_links(state: AppState, user_id: i64) -> Vec<CheckResult> {
 
         handles.push(tokio::spawn(async move {
             let _permit = sem.acquire().await;
-            let result = check_single_link(&client, id, &title, &url, icon, now).await;
+            let result =
+                check_single_link(&client, id, &title, &url, icon, now, allow_private).await;
 
             let mut state_map = state.check_state.lock().await;
             if let Some(progress) = state_map.get_mut(&user_id) {
@@ -234,10 +238,12 @@ async fn check_single_link(
     url_str: &str,
     icon: Option<String>,
     now: i64,
+    allow_private: bool,
 ) -> CheckResult {
     let base_url = extract_base_origin(url_str);
 
-    let (level, http_code, error, final_url) = match probe_url(client, url_str).await {
+    let (level, http_code, error, final_url) = match probe_url(client, url_str, allow_private).await
+    {
         ProbeResult::Ok { status, final_url } => ("ok".to_string(), Some(status), None, final_url),
         ProbeResult::Suspect {
             status, final_url, ..
@@ -252,7 +258,7 @@ async fn check_single_link(
             error_msg,
             final_url,
         } => {
-            let base_alive = probe_base_alive(client, &base_url).await;
+            let base_alive = probe_base_alive(client, &base_url, allow_private).await;
             if base_alive {
                 ("page_dead".to_string(), status, Some(error_msg), final_url)
             } else {
@@ -295,7 +301,14 @@ enum ProbeResult {
     },
 }
 
-async fn probe_url(client: &Client, url_str: &str) -> ProbeResult {
+async fn probe_url(client: &Client, url_str: &str, allow_private: bool) -> ProbeResult {
+    if is_blocked_url(url_str, allow_private).await {
+        return ProbeResult::Dead {
+            status: None,
+            error_msg: "blocked: private or local address".to_string(),
+            final_url: None,
+        };
+    }
     match client.head(url_str).send().await {
         Ok(resp) => {
             let status = resp.status().as_u16();
@@ -349,8 +362,8 @@ fn is_cross_domain(original: &str, final_url: &str) -> bool {
     orig.host_str() != dest.host_str()
 }
 
-async fn probe_base_alive(client: &Client, base_url: &str) -> bool {
-    if base_url.is_empty() {
+async fn probe_base_alive(client: &Client, base_url: &str, allow_private: bool) -> bool {
+    if base_url.is_empty() || is_blocked_url(base_url, allow_private).await {
         return false;
     }
     match client.head(base_url).send().await {
@@ -376,5 +389,89 @@ fn extract_base_origin(url_str: &str) -> String {
             }
         }
         Err(_) => String::new(),
+    }
+}
+
+fn is_private_or_local(ip: &IpAddr) -> bool {
+    match ip {
+        IpAddr::V4(v4) => {
+            v4.is_loopback()
+                || v4.is_private()
+                || v4.is_link_local()
+                || v4.is_unspecified()
+                || v4.is_broadcast()
+                || v4.is_documentation()
+                || (v4.octets()[0] == 100 && (v4.octets()[1] & 0b1100_0000) == 64)
+                || (v4.octets()[0] == 192 && v4.octets()[1] == 0 && v4.octets()[2] == 0)
+        }
+        IpAddr::V6(v6) => {
+            v6.is_loopback()
+                || v6.is_unspecified()
+                || v6.is_unique_local()
+                || v6.is_unicast_link_local()
+        }
+    }
+}
+
+async fn is_blocked_url(url_str: &str, allow_private: bool) -> bool {
+    if allow_private {
+        return false;
+    }
+    let parsed = match url::Url::parse(url_str) {
+        Ok(u) => u,
+        Err(_) => return true,
+    };
+    let host = match parsed.host_str() {
+        Some(h) => h.to_string(),
+        None => return true,
+    };
+    let port = parsed.port_or_known_default().unwrap_or(80);
+
+    if let Ok(ip) = host.parse::<IpAddr>() {
+        return is_private_or_local(&ip);
+    }
+
+    let blocked = match tokio::net::lookup_host((host.as_str(), port)).await {
+        Ok(addrs) => {
+            let ips: Vec<IpAddr> = addrs.map(|a| a.ip()).collect();
+            ips.is_empty() || ips.iter().any(is_private_or_local)
+        }
+        Err(_) => true,
+    };
+    blocked
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn blocks_private_and_loopback_ips() {
+        for ip in [
+            "127.0.0.1",
+            "10.0.0.1",
+            "172.16.0.1",
+            "192.168.1.1",
+            "169.254.169.254",
+            "0.0.0.0",
+            "::1",
+            "fc00::1",
+            "fe80::1",
+        ] {
+            assert!(
+                is_private_or_local(&ip.parse::<IpAddr>().unwrap()),
+                "should block {ip}"
+            );
+        }
+    }
+
+    #[test]
+    fn allows_public_ips() {
+        for ip in ["8.8.8.8", "1.1.1.1", "93.184.216.34"] {
+            assert!(
+                !is_private_or_local(&ip.parse::<IpAddr>().unwrap()),
+                "should allow {ip}"
+            );
+        }
     }
 }
