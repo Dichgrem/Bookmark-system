@@ -8,8 +8,7 @@
   >
     <div v-if="!started" class="check-start">
       <p>
-        将对所有书签链接逐一发送 HTTP HEAD
-        请求检测存活状态。检测过程中不会修改任何数据。24h 内重复检测将使用缓存。
+        {{ $t("checkLinks.description") }}
       </p>
       <el-button type="primary" @click="startCheck">
         {{ $t("checkLinks.checkBtn") }}

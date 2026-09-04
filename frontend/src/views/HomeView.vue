@@ -87,19 +87,23 @@
       </template>
     </el-dialog>
 
-    <el-dialog v-model="showChangePwd" title="修改密码" width="400px">
+    <el-dialog
+      v-model="showChangePwd"
+      :title="$t('sidebar.changePassword')"
+      width="400px"
+    >
       <input
         v-model="changePwdForm.oldPassword"
         type="password"
         class="modern-input full-width"
-        placeholder="原密码"
+        :placeholder="$t('userAdmin.oldPassword')"
         style="margin-bottom: 12px"
       />
       <input
         v-model="changePwdForm.newPassword"
         type="password"
         class="modern-input full-width"
-        placeholder="新密码"
+        :placeholder="$t('userAdmin.newPassword')"
       />
       <template #footer>
         <DialogFooter @cancel="showChangePwd = false" @save="handleChangePwd" />
@@ -108,7 +112,7 @@
 
     <el-dialog
       v-model="showAddUser"
-      title="用户管理"
+      :title="$t('userAdmin.title')"
       width="480px"
       @open="loadUsers"
     >
@@ -118,14 +122,14 @@
         <input
           v-model="newUserForm.username"
           class="modern-input"
-          placeholder="用户名"
+          :placeholder="$t('login.username')"
           style="flex: 1; min-width: 120px"
         />
         <input
           v-model="newUserForm.password"
           type="password"
           class="modern-input"
-          placeholder="密码"
+          :placeholder="$t('login.password')"
           style="flex: 1; min-width: 120px"
         />
         <button
@@ -133,7 +137,7 @@
           style="flex-shrink: 0"
           @click="handleAddUser"
         >
-          添加
+          {{ $t("sidebar.add") }}
         </button>
       </div>
       <div
@@ -150,7 +154,7 @@
         <span
           >{{ u.username }}
           <span style="color: #999; font-size: 12px">{{
-            u.role === "admin" ? "(管理员)" : ""
+            u.role === "admin" ? $t("userAdmin.adminTag") : ""
           }}</span></span
         >
         <button
@@ -159,12 +163,12 @@
           style="color: #e74c3c; border-color: #e74c3c; padding: 4px 12px"
           @click="handleDeleteUser(u.id, u.username)"
         >
-          删除
+          {{ $t("userAdmin.delete") }}
         </button>
       </div>
       <template #footer>
         <button class="outline-btn small-btn" @click="showAddUser = false">
-          关闭
+          {{ $t("userAdmin.close") }}
         </button>
       </template>
     </el-dialog>

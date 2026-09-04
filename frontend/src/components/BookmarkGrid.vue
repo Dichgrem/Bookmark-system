@@ -5,7 +5,7 @@
         d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
       ></path>
     </svg>
-    暂无书签
+    {{ $t("bookmark.noBookmarks") }}
   </div>
 
   <div
@@ -22,7 +22,7 @@
       v-if="group.items.length === 0 && !group.hasChildren"
       class="group-empty"
     >
-      暂无书签
+      {{ $t("bookmark.noBookmarks") }}
     </div>
     <div v-else class="book-grid">
       <div
@@ -53,7 +53,11 @@
         </div>
         <span class="book-url-text" :title="book.url">{{ book.url }}</span>
         <div class="book-actions">
-          <span class="action-icon" @click="$emit('edit', book)" title="编辑">
+          <span
+            class="action-icon"
+            @click="$emit('edit', book)"
+            :title="$t('bookmark.edit')"
+          >
             <svg class="svg-icon" viewBox="0 0 24 24">
               <path d="M12 20h9"></path>
               <path
@@ -69,6 +73,9 @@
 
 <script setup>
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps({ groups: Array, skipFirstTitle: Boolean });
 const emit = defineEmits(["dragStart", "dragEnd", "edit", "reorder"]);

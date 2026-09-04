@@ -29,31 +29,31 @@ export function useUserAdmin() {
     try {
       const res = await request.post("/user/create", newUserForm.value);
       if (res.data.code === 200) {
-        ElMessage.success("用户创建成功");
+        ElMessage.success(t("userAdmin.addSuccess"));
         newUserForm.value = { username: "", password: "" };
         loadUsers();
-      } else ElMessage.error(res.data.msg || "创建失败");
+      } else ElMessage.error(res.data.msg || t("userAdmin.addFailed"));
     } catch {
-      ElMessage.error("创建失败");
+      ElMessage.error(t("userAdmin.addFailed"));
     }
   };
 
   const handleDeleteUser = async (userId, username) => {
     try {
       await ElMessageBox.confirm(
-        `确定要删除用户「${username}」吗？`,
-        "删除用户",
+        t("userAdmin.deleteConfirm", { username }),
+        t("userAdmin.deleteTitle"),
         {
-          confirmButtonText: "删除",
-          cancelButtonText: "取消",
+          confirmButtonText: t("userAdmin.delete"),
+          cancelButtonText: t("bookmark.cancel"),
           type: "warning",
         },
       );
       const res = await request.post("/user/delete", { id: userId });
       if (res.data.code === 200) {
-        ElMessage.success("用户已删除");
+        ElMessage.success(t("userAdmin.deleteSuccess"));
         loadUsers();
-      } else ElMessage.error(res.data.msg || "删除失败");
+      } else ElMessage.error(res.data.msg || t("userAdmin.deleteFailed"));
     } catch {
       /* cancelled or error */
     }
@@ -70,12 +70,12 @@ export function useUserAdmin() {
         newPassword: changePwdForm.value.newPassword,
       });
       if (res.data.code === 200) {
-        ElMessage.success("密码修改成功");
+        ElMessage.success(t("userAdmin.changePwdSuccess"));
         showChangePwd.value = false;
         changePwdForm.value = { oldPassword: "", newPassword: "" };
-      } else ElMessage.error(res.data.msg || "修改失败");
+      } else ElMessage.error(res.data.msg || t("userAdmin.changePwdFailed"));
     } catch {
-      ElMessage.error("修改失败");
+      ElMessage.error(t("userAdmin.changePwdFailed"));
     }
   };
 
