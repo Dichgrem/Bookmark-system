@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "../views/LoginView.vue";
 import HomeView from "../views/HomeView.vue";
-import { LS_TOKEN } from "../utils/constants.js";
+import { isTokenValid } from "../utils/auth.js";
+import { LS_TOKEN, LS_USER } from "../utils/constants.js";
 
 const routes = [
   {
@@ -22,13 +23,17 @@ const router = createRouter({
   routes,
 });
 
-const isLoggedIn = () => !!localStorage.getItem(LS_TOKEN);
-
 router.beforeEach((to) => {
-  if (to.meta.requiresAuth && !isLoggedIn()) {
+  const tokenExists = !!localStorage.getItem(LS_TOKEN);
+  const valid = isTokenValid();
+  if (tokenExists && !valid) {
+    localStorage.removeItem(LS_TOKEN);
+    localStorage.removeItem(LS_USER);
+  }
+  if (to.meta.requiresAuth && !valid) {
     return { name: "Login" };
   }
-  if (to.name === "Login" && isLoggedIn()) {
+  if (to.name === "Login" && valid) {
     return { name: "Home" };
   }
 });
