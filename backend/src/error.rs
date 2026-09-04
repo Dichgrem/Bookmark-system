@@ -23,6 +23,7 @@ impl AppError {
 
 impl IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
+        tracing::error!("request failed: {}", self.message);
         let body = Json(json!({
             "code": 500,
             "msg": self.message,
@@ -34,6 +35,16 @@ impl IntoResponse for AppError {
 
 impl From<rusqlite::Error> for AppError {
     fn from(e: rusqlite::Error) -> Self {
+        if let rusqlite::Error::SqliteFailure(ffi, detail) = &e {
+            tracing::error!(
+                "database error: code={:?} extended_code={} detail={:?}",
+                ffi.code,
+                ffi.extended_code,
+                detail
+            );
+        } else {
+            tracing::error!("database error: {e:?}");
+        }
         Self {
             message: format!("数据库错误: {}", e),
         }

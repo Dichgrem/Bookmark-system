@@ -15,6 +15,7 @@ COPY --from=backend-build --chown=65534:65534 /app/.local /app/.local
 COPY --from=frontend-build /app/dist /frontend/dist
 ENV FRONTEND_DIR=/frontend/dist
 ENV DATABASE_PATH=/app/.local/bookmark.db
+ENV TMPDIR=/app/.local
 USER 65534
 EXPOSE 8989
 ENTRYPOINT ["/bookmark-backend"]

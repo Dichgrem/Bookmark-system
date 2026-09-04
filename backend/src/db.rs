@@ -14,7 +14,7 @@ pub fn init_db(db_path: &str) -> (DbPool, String) {
 
     let mut conn = Connection::open(path).expect("Failed to open SQLite database");
 
-    conn.execute_batch("PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;")
+    conn.execute_batch("PRAGMA foreign_keys=ON;")
         .expect("Failed to set pragmas");
 
     let migrations = Migrations::new(vec![
