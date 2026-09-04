@@ -7,6 +7,7 @@ export function useDragDrop(bookList, cateList, selectedCategoryId, loadData) {
   const { t } = useI18n();
 
   const PENDING_DELAY = 3000;
+  const EAT_ANIM_MS = 600;
 
   const isDraggingBookmark = ref(false);
   const isDraggingCategory = ref(false);
@@ -99,7 +100,7 @@ export function useDragDrop(bookList, cateList, selectedCategoryId, loadData) {
           ElMessage.error(t("bookmark.moveFailed"));
           loadData();
         }
-      }, 600);
+      }, EAT_ANIM_MS);
     }
   };
 
@@ -187,7 +188,7 @@ export function useDragDrop(bookList, cateList, selectedCategoryId, loadData) {
 
       setTimeout(() => {
         eatingTrash.value = false;
-      }, 600);
+      }, EAT_ANIM_MS);
       return;
     }
     if (isDraggingBookmark.value) {
@@ -218,7 +219,7 @@ export function useDragDrop(bookList, cateList, selectedCategoryId, loadData) {
       });
       setTimeout(() => {
         eatingTrash.value = false;
-      }, 600);
+      }, EAT_ANIM_MS);
     }
   };
 
