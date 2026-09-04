@@ -2,6 +2,20 @@
 
 All notable changes to subnav.
 
+## [0.3.1] - 2026-09-04
+
+### Changed
+- Migrate to single-user mode: remove user_id/role columns, AdminUser, multi-user APIs and frontend user management UI (keep login/JWT/change password/env-based bootstrap)
+- HTML import parsing is now case-insensitive, decodes entities, and prefers ICON_URI over bulky data-URI icons
+
+### Fixed
+- Export order now follows sort_order (was insertion order)
+- Router pre-checks JWT expiry to avoid wasted requests to protected pages
+- Migrate remaining hardcoded Chinese UI text to i18n
+
+### BREAKING
+- Database schema changed; delete existing database files to recreate
+
 ## [0.3.0] - 2026-09-03
 
 ### Security
