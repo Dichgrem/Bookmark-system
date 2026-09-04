@@ -62,10 +62,7 @@ async fn main() {
         .route(
             "/user/changePassword",
             post(handlers::user::change_password),
-        )
-        .route("/user/create", post(handlers::user::create_user))
-        .route("/user/delete", post(handlers::user::delete_user))
-        .route("/user/list", get(handlers::user::list_users));
+        );
 
     let api_routes = Router::new()
         .route("/category/list", get(handlers::category::list))

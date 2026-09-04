@@ -22,7 +22,6 @@ export default {
     add: "添加",
     editCategory: "编辑分类",
     addSubCategory: "新建子分类",
-    addUser: "添加用户",
     changePassword: "修改密码",
   },
   bookmark: {
@@ -61,20 +60,10 @@ export default {
     nameRequired: "请输入分类名称",
   },
   userAdmin: {
-    title: "用户管理",
     oldPassword: "原密码",
     newPassword: "新密码",
-    addSuccess: "用户创建成功",
-    addFailed: "创建失败",
-    deleteConfirm: "确定要删除用户「{username}」吗？",
-    deleteTitle: "删除用户",
-    delete: "删除",
-    close: "关闭",
-    deleteSuccess: "用户已删除",
-    deleteFailed: "删除失败",
     changePwdSuccess: "密码修改成功",
     changePwdFailed: "修改失败",
-    adminTag: "(管理员)",
   },
   app: {
     backToTop: "回到顶部",

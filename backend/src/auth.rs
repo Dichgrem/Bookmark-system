@@ -11,26 +11,16 @@ use serde_json::json;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     pub sub: i64,
-    pub role: String,
     pub exp: usize,
 }
 
-pub fn sign_token(
-    user_id: i64,
-    role: &str,
-    secret: &str,
-    expire_hours: usize,
-) -> Result<String, String> {
+pub fn sign_token(secret: &str, expire_hours: usize) -> Result<String, String> {
     let exp = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
         .as_secs() as usize
         + expire_hours * 3600;
-    let claims = Claims {
-        sub: user_id,
-        role: role.to_string(),
-        exp,
-    };
+    let claims = Claims { sub: 1, exp };
     encode(
         &Header::default(),
         &claims,
@@ -90,73 +80,26 @@ impl FromRequestParts<AppState> for AuthUser {
     }
 }
 
-pub struct AdminUser(#[allow(dead_code)] pub i64);
-
-#[async_trait]
-impl FromRequestParts<AppState> for AdminUser {
-    type Rejection = (StatusCode, Json<serde_json::Value>);
-
-    async fn from_request_parts(
-        parts: &mut Parts,
-        state: &AppState,
-    ) -> Result<Self, Self::Rejection> {
-        let header_value = parts
-            .headers
-            .get(header::AUTHORIZATION)
-            .and_then(|v| v.to_str().ok())
-            .ok_or_else(|| {
-                (
-                    StatusCode::UNAUTHORIZED,
-                    Json(json!({"code":401,"msg":"未登录","data":null})),
-                )
-            })?;
-
-        let token = header_value.strip_prefix("Bearer ").ok_or_else(|| {
-            (
-                StatusCode::UNAUTHORIZED,
-                Json(json!({"code":401,"msg":"认证格式错误","data":null})),
-            )
-        })?;
-
-        let claims = verify_token(token, &state.jwt_secret).map_err(|e| {
-            (
-                StatusCode::UNAUTHORIZED,
-                Json(json!({"code":401,"msg":e,"data":null})),
-            )
-        })?;
-
-        if claims.role != "admin" {
-            return Err((
-                StatusCode::FORBIDDEN,
-                Json(json!({"code":403,"msg":"需要管理员权限","data":null})),
-            ));
-        }
-
-        Ok(AdminUser(claims.sub))
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn sign_and_verify_roundtrip() {
-        let token = sign_token(42, "admin", "secret123", 72).unwrap();
+        let token = sign_token("secret123", 72).unwrap();
         let claims = verify_token(&token, "secret123").unwrap();
-        assert_eq!(claims.sub, 42);
-        assert_eq!(claims.role, "admin");
+        assert_eq!(claims.sub, 1);
     }
 
     #[test]
     fn verify_wrong_secret() {
-        let token = sign_token(1, "user", "correct", 72).unwrap();
+        let token = sign_token("correct", 72).unwrap();
         assert!(verify_token(&token, "wrong").is_err());
     }
 
     #[test]
     fn verify_tampered_token() {
-        let token = sign_token(1, "user", "secret", 72).unwrap();
+        let token = sign_token("secret", 72).unwrap();
         let tampered = token + "x";
         assert!(verify_token(&tampered, "secret").is_err());
     }

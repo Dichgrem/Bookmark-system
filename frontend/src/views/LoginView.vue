@@ -26,7 +26,6 @@ const handleLogin = async (payload) => {
         JSON.stringify({
           id: res.data.data.id,
           username: res.data.data.username,
-          role: res.data.data.role,
         }),
       );
       ElMessage.success(t("login.loginSuccess"));

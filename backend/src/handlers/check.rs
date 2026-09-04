@@ -147,7 +147,7 @@ async fn check_all_links(state: AppState, user_id: i64) -> Vec<CheckResult> {
         .unwrap()
         .as_secs() as i64;
 
-    let bookmarks = load_bookmarks(&state, user_id);
+    let bookmarks = load_bookmarks(&state);
     if bookmarks.is_empty() {
         let mut state_map = state.check_state.lock().await;
         if let Some(progress) = state_map.get_mut(&user_id) {
@@ -215,17 +215,16 @@ async fn check_all_links(state: AppState, user_id: i64) -> Vec<CheckResult> {
     }
 }
 
-fn load_bookmarks(state: &AppState, user_id: i64) -> Vec<(i64, String, String, Option<String>)> {
+fn load_bookmarks(state: &AppState) -> Vec<(i64, String, String, Option<String>)> {
     let conn = match state.db.get() {
         Ok(c) => c,
         Err(_) => return vec![],
     };
-    let mut stmt =
-        match conn.prepare("SELECT id, title, url, icon FROM bookmark WHERE user_id = ?1") {
-            Ok(s) => s,
-            Err(_) => return vec![],
-        };
-    let rows = stmt.query_map(rusqlite::params![user_id], |row| {
+    let mut stmt = match conn.prepare("SELECT id, title, url, icon FROM bookmark") {
+        Ok(s) => s,
+        Err(_) => return vec![],
+    };
+    let rows = stmt.query_map([], |row| {
         Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?))
     });
     match rows {

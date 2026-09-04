@@ -54,9 +54,6 @@
               <el-dropdown-item divided command="change-password">{{
                 $t("sidebar.changePassword")
               }}</el-dropdown-item>
-              <el-dropdown-item v-if="isAdmin" command="add-user">{{
-                $t("sidebar.addUser")
-              }}</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -377,7 +374,6 @@ const props = defineProps({
   dragHoverId: [Number, null],
   eatingId: [Number, null],
   darkMode: Boolean,
-  isAdmin: Boolean,
 });
 
 watch(

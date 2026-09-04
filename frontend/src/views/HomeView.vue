@@ -8,7 +8,6 @@
         :drag-hover-id="dragHoverCategoryId"
         :eating-id="eatingCategoryId"
         :dark-mode="darkMode"
-        :is-admin="isAdmin"
         @select="scrollToGroup"
         @command="handleCommand"
         @logout="logout"
@@ -107,69 +106,6 @@
       />
       <template #footer>
         <DialogFooter @cancel="showChangePwd = false" @save="handleChangePwd" />
-      </template>
-    </el-dialog>
-
-    <el-dialog
-      v-model="showAddUser"
-      :title="$t('userAdmin.title')"
-      width="480px"
-      @open="loadUsers"
-    >
-      <div
-        style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap"
-      >
-        <input
-          v-model="newUserForm.username"
-          class="modern-input"
-          :placeholder="$t('login.username')"
-          style="flex: 1; min-width: 120px"
-        />
-        <input
-          v-model="newUserForm.password"
-          type="password"
-          class="modern-input"
-          :placeholder="$t('login.password')"
-          style="flex: 1; min-width: 120px"
-        />
-        <button
-          class="primary-btn small-btn"
-          style="flex-shrink: 0"
-          @click="handleAddUser"
-        >
-          {{ $t("sidebar.add") }}
-        </button>
-      </div>
-      <div
-        v-for="u in userList"
-        :key="u.id"
-        style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 6px 0;
-          border-bottom: 1px solid #eee;
-        "
-      >
-        <span
-          >{{ u.username }}
-          <span style="color: #999; font-size: 12px">{{
-            u.role === "admin" ? $t("userAdmin.adminTag") : ""
-          }}</span></span
-        >
-        <button
-          v-if="u.role !== 'admin'"
-          class="outline-btn small-btn"
-          style="color: #e74c3c; border-color: #e74c3c; padding: 4px 12px"
-          @click="handleDeleteUser(u.id, u.username)"
-        >
-          {{ $t("userAdmin.delete") }}
-        </button>
-      </div>
-      <template #footer>
-        <button class="outline-btn small-btn" @click="showAddUser = false">
-          {{ $t("userAdmin.close") }}
-        </button>
       </template>
     </el-dialog>
 
@@ -308,7 +244,7 @@ import { useBookmarks } from "../composables/useBookmarks.js";
 import { useDragDrop } from "../composables/useDragDrop.js";
 import { useScroll } from "../composables/useScroll.js";
 import { useImportExport } from "../composables/useImportExport.js";
-import { useUserAdmin } from "../composables/useUserAdmin.js";
+import { useChangePassword } from "../composables/useChangePassword.js";
 import Sidebar from "../components/Sidebar.vue";
 import SearchBar from "../components/SearchBar.vue";
 import BookmarkGrid from "../components/BookmarkGrid.vue";
@@ -347,13 +283,6 @@ const {
 } = useBookmarks();
 
 const darkMode = ref(localStorage.getItem(LS_DARK) === "true");
-let currentUser = {};
-try {
-  currentUser = JSON.parse(localStorage.getItem(LS_USER) || "{}");
-} catch {
-  currentUser = {};
-}
-const isAdmin = computed(() => currentUser.role === "admin");
 
 const selectedCategoryId = ref(null);
 const sidebarCollapsed = ref(false);
@@ -428,17 +357,7 @@ const {
   handleFileUpload,
 } = useImportExport(loadData);
 
-const {
-  showAddUser,
-  showChangePwd,
-  newUserForm,
-  changePwdForm,
-  userList,
-  loadUsers,
-  handleAddUser,
-  handleDeleteUser,
-  handleChangePwd,
-} = useUserAdmin();
+const { showChangePwd, changePwdForm, handleChangePwd } = useChangePassword();
 
 const handleCommand = (command) => {
   if (command === "export-html") exportBookmarks();
@@ -446,7 +365,6 @@ const handleCommand = (command) => {
   else if (command === "fetch-icons") fetchIcons();
   else if (command === "lang-zh") switchLang("zh-CN");
   else if (command === "lang-en") switchLang("en-US");
-  else if (command === "add-user") showAddUser.value = true;
   else if (command === "change-password") showChangePwd.value = true;
   else if (command === "check-links") showCheckLinks.value = true;
 };

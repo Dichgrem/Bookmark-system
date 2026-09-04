@@ -7,12 +7,6 @@ pub struct User {
     pub username: String,
     #[serde(skip_serializing)]
     pub password: String,
-    #[serde(default = "default_role")]
-    pub role: String,
-}
-
-fn default_role() -> String {
-    "user".to_string()
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -20,8 +14,6 @@ fn default_role() -> String {
 pub struct Category {
     pub id: Option<i64>,
     pub name: String,
-    #[serde(default)]
-    pub user_id: i64,
     pub parent_id: Option<i64>,
     #[serde(default)]
     pub sort_order: i32,
@@ -35,8 +27,6 @@ pub struct Bookmark {
     pub url: String,
     pub icon: Option<String>,
     pub category_id: Option<i64>,
-    #[serde(default)]
-    pub user_id: i64,
     #[serde(default)]
     pub sort_order: i32,
 }

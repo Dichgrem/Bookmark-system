@@ -22,7 +22,6 @@ export default {
     add: "Add",
     editCategory: "Edit Category",
     addSubCategory: "Add Subcategory",
-    addUser: "Add User",
     changePassword: "Change Password",
   },
   bookmark: {
@@ -61,20 +60,10 @@ export default {
     nameRequired: "Category name is required",
   },
   userAdmin: {
-    title: "User Management",
     oldPassword: "Old Password",
     newPassword: "New Password",
-    addSuccess: "User created",
-    addFailed: "Failed to create user",
-    deleteConfirm: 'Delete user "{username}"?',
-    deleteTitle: "Delete User",
-    delete: "Delete",
-    close: "Close",
-    deleteSuccess: "User deleted",
-    deleteFailed: "Failed to delete user",
     changePwdSuccess: "Password changed",
     changePwdFailed: "Failed to change password",
-    adminTag: "(Admin)",
   },
   app: {
     backToTop: "Back to Top",

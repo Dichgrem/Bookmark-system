@@ -26,13 +26,11 @@ pub fn init_db(db_path: &str) -> (DbPool, String) {
             CREATE TABLE IF NOT EXISTS user (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL,
-                role TEXT NOT NULL DEFAULT 'user'
+                password TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS category (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                user_id INTEGER NOT NULL,
                 parent_id INTEGER,
                 sort_order INTEGER DEFAULT 0
             );
@@ -42,15 +40,11 @@ pub fn init_db(db_path: &str) -> (DbPool, String) {
                 url TEXT NOT NULL,
                 icon TEXT,
                 category_id INTEGER,
-                user_id INTEGER NOT NULL,
                 sort_order INTEGER DEFAULT 0
             );",
         ),
         M::up(
-            "CREATE INDEX IF NOT EXISTS idx_bookmark_user_id ON bookmark(user_id);
-             CREATE INDEX IF NOT EXISTS idx_bookmark_category_id ON bookmark(category_id);
-             CREATE INDEX IF NOT EXISTS idx_bookmark_url_user ON bookmark(url, user_id);
-             CREATE INDEX IF NOT EXISTS idx_category_user_id ON category(user_id);
+            "CREATE INDEX IF NOT EXISTS idx_bookmark_category_id ON bookmark(category_id);
              CREATE INDEX IF NOT EXISTS idx_category_parent_id ON category(parent_id);",
         ),
     ]);
@@ -101,7 +95,7 @@ pub fn ensure_admin_user(pool: &DbPool, username: &str, password: &str) {
     }
     let hashed = bcrypt::hash(password, 10).expect("Failed to hash admin password");
     conn.execute(
-        "INSERT INTO user (username, password, role) VALUES (?1, ?2, 'admin')",
+        "INSERT INTO user (username, password) VALUES (?1, ?2)",
         rusqlite::params![username, hashed],
     )
     .expect("Failed to create admin user");

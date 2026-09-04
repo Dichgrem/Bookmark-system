@@ -15,12 +15,11 @@ pub fn extract_attr_value(line: &str) -> String {
 pub fn insert_bookmark_if_new(
     conn: &Connection,
     bookmark: &Bookmark,
-    user_id: i64,
 ) -> Result<Option<i64>, AppError> {
     let exists: bool = conn
         .query_row(
-            "SELECT COUNT(*) FROM bookmark WHERE url = ?1 AND user_id = ?2",
-            rusqlite::params![bookmark.url, user_id],
+            "SELECT COUNT(*) FROM bookmark WHERE url = ?1",
+            rusqlite::params![bookmark.url],
             |row| row.get::<_, i64>(0),
         )
         .map(|c| c > 0)
@@ -28,13 +27,12 @@ pub fn insert_bookmark_if_new(
 
     if !exists {
         conn.execute(
-            "INSERT INTO bookmark (title, url, icon, category_id, user_id, sort_order) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            "INSERT INTO bookmark (title, url, icon, category_id, sort_order) VALUES (?1, ?2, ?3, ?4, ?5)",
             rusqlite::params![
                 bookmark.title,
                 bookmark.url,
                 bookmark.icon,
                 bookmark.category_id,
-                user_id,
                 bookmark.sort_order,
             ],
         )?;
@@ -52,26 +50,24 @@ pub fn insert_bookmark_if_new(
 pub fn get_category_by_name(
     conn: &Connection,
     name: &str,
-    user_id: i64,
     parent_id: Option<i64>,
 ) -> Option<Category> {
     conn.query_row(
-        "SELECT id, name, user_id, parent_id, sort_order FROM category WHERE name = ?1 AND user_id = ?2 AND ((?3 IS NULL AND parent_id IS NULL) OR parent_id = ?3)",
-        rusqlite::params![name, user_id, parent_id],
+        "SELECT id, name, parent_id, sort_order FROM category WHERE name = ?1 AND ((?2 IS NULL AND parent_id IS NULL) OR parent_id = ?2)",
+        rusqlite::params![name, parent_id],
         |row| {
             Ok(Category {
                 id: Some(row.get(0)?),
                 name: row.get(1)?,
-                user_id: row.get(2)?,
-                parent_id: row.get(3)?,
-                sort_order: row.get(4)?,
+                parent_id: row.get(2)?,
+                sort_order: row.get(3)?,
             })
         },
     )
     .ok()
 }
 
-pub fn import_from_html(conn: &Connection, html: &str, user_id: i64) -> Result<i64, AppError> {
+pub fn import_from_html(conn: &Connection, html: &str) -> Result<i64, AppError> {
     let mut stack: Vec<i64> = Vec::new();
     let mut count = 0i64;
 
@@ -81,13 +77,13 @@ pub fn import_from_html(conn: &Connection, html: &str, user_id: i64) -> Result<i
             let name = extract_attr_value(trimmed);
             let name = name.trim().to_string();
             let parent_id = stack.last().copied();
-            let cat = get_category_by_name(conn, &name, user_id, parent_id);
+            let cat = get_category_by_name(conn, &name, parent_id);
             let cat_id = if let Some(c) = cat {
                 c.id.unwrap()
             } else {
                 conn.execute(
-                    "INSERT INTO category (name, user_id, parent_id, sort_order) VALUES (?1, ?2, ?3, 0)",
-                    rusqlite::params![name, user_id, parent_id],
+                    "INSERT INTO category (name, parent_id, sort_order) VALUES (?1, ?2, 0)",
+                    rusqlite::params![name, parent_id],
                 )?;
                 conn.last_insert_rowid()
             };
@@ -117,10 +113,9 @@ pub fn import_from_html(conn: &Connection, html: &str, user_id: i64) -> Result<i
                     url,
                     icon,
                     category_id,
-                    user_id,
                     sort_order: 0,
                 };
-                if let Some(c) = insert_bookmark_if_new(conn, &bookmark, user_id)? {
+                if let Some(c) = insert_bookmark_if_new(conn, &bookmark)? {
                     count += c;
                 }
             }
